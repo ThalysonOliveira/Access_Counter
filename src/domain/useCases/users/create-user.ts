@@ -5,5 +5,5 @@ export interface CreateUserInput {
 }
 
 export interface CreateUser {
-  execute: (input: CreateUserInput) => Promise<string>;
+  execute: (input: CreateUserInput) => Promise<void>;
 }
