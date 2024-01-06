@@ -1,6 +1,11 @@
 import { CreateUser } from '../../../domain/useCases/users';
-import { EmailValidate, badRequest, ok, serverError } from '../../helpers';
-import { Controller, HttpRequest, HttpResponse } from '../../protocols';
+import { badRequest, ok, serverError } from '../../helpers';
+import {
+  Controller,
+  EmailValidate,
+  HttpRequest,
+  HttpResponse,
+} from '../../protocols';
 
 export class CreateUserController implements Controller {
   constructor(
