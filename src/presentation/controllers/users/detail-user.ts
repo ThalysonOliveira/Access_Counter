@@ -1,5 +1,5 @@
 import { DetailUser } from '../../../domain/useCases/users';
-import { ok, serverError } from '../../helpers';
+import { badRequest, ok, serverError } from '../../helpers';
 import { Controller, HttpRequest, HttpResponse } from '../../protocols';
 
 export class DetailUserController implements Controller {
@@ -7,6 +7,11 @@ export class DetailUserController implements Controller {
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
+      const userParamsId = httpRequest.params.id;
+
+      if (!userParamsId)
+        return badRequest(new Error('O campo id é obrigatório.'));
+
       const user = await this.detailUser.execute(httpRequest.params.id);
 
       return ok({
@@ -15,7 +20,7 @@ export class DetailUserController implements Controller {
         },
       });
     } catch (error) {
-      return serverError(error);
+      return serverError(error as any);
     }
   }
 }
