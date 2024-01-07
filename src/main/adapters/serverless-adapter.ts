@@ -5,8 +5,11 @@ export const serverlessAdapter = (controller: Controller) => {
   return async (
     event: APIGatewayProxyEvent,
   ): Promise<APIGatewayProxyResult> => {
+    const params = event.pathParameters;
+
     const httpRequest = {
       body: JSON.parse(event.body!),
+      params,
     };
 
     const response = await controller.handle(httpRequest);
