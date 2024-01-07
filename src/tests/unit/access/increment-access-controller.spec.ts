@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import { IncrementAccessNumber } from '../../../domain/useCases/access';
 import { IncrementAccessNumberController } from '../../../presentation/controllers/access';
+import { serverError } from '../../../presentation/helpers';
 
 let INITIAL_NUMBER_ACCESS = 0;
 
@@ -28,6 +29,20 @@ const makeSut = (): SutTypes => {
 };
 
 describe('Check Total Access Number Controller', () => {
+  it('Should return server error if IncrementAccessNumber throw', async () => {
+    const { sut, incrementAccessNumberStub } = makeSut();
+
+    jest
+      .spyOn(incrementAccessNumberStub, 'execute')
+      .mockReturnValueOnce(
+        new Promise((_resolve, reject) => reject(new Error())),
+      );
+
+    const response = await sut.handle();
+
+    assert.deepEqual(response, serverError(new Error()));
+  });
+
   it('Should increment access number', async () => {
     const { sut } = makeSut();
 
