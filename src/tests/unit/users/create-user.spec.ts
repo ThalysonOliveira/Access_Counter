@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { CreateUser } from '../../../domain/useCases/users';
 import { EmailValidate } from '../../../presentation/protocols';
 import { CreateUserController } from '../../../presentation/controllers/users';
-import { badRequest } from '../../../presentation/helpers';
+import { badRequest, serverError } from '../../../presentation/helpers';
 
 interface SutTypes {
   sut: CreateUserController;
@@ -109,5 +109,27 @@ describe('Create User Controller', () => {
     const response = await sut.handle(httpRequest);
 
     assert.deepEqual(response, badRequest(new Error('Email invalido.')));
+  });
+
+  it('Should return server error if CreateUser throw', async () => {
+    const { sut, createUserStub } = makeSut();
+
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@email.com',
+        password: 'any_password',
+      },
+    };
+
+    jest
+      .spyOn(createUserStub, 'execute')
+      .mockReturnValueOnce(
+        new Promise((_resolve, reject) => reject(new Error())),
+      );
+
+    const response = await sut.handle(httpRequest);
+
+    assert.deepEqual(response, serverError(new Error()));
   });
 });
