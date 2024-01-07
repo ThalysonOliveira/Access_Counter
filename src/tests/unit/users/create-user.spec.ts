@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { CreateUser } from '../../../domain/useCases/users';
 import { EmailValidate } from '../../../presentation/protocols';
 import { CreateUserController } from '../../../presentation/controllers/users';
-import { badRequest, serverError } from '../../../presentation/helpers';
+import { badRequest, ok, serverError } from '../../../presentation/helpers';
 
 interface SutTypes {
   sut: CreateUserController;
@@ -13,7 +13,7 @@ interface SutTypes {
 const makeCreateUser = () => {
   class CreateUserStub implements CreateUser {
     async execute(): Promise<void> {
-      await new Promise((resolve) => resolve);
+      return await new Promise((resolve) => resolve());
     }
   }
 
@@ -131,5 +131,28 @@ describe('Create User Controller', () => {
     const response = await sut.handle(httpRequest);
 
     assert.deepEqual(response, serverError(new Error()));
+  });
+
+  it('Should return ok if valid data are provided', async () => {
+    const { sut } = makeSut();
+
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@email.com',
+        password: 'any_password',
+      },
+    };
+
+    const response = await sut.handle(httpRequest);
+
+    assert.deepEqual(
+      response,
+      ok({
+        data: {
+          message: 'Usuário criado com sucesso.',
+        },
+      }),
+    );
   });
 });
