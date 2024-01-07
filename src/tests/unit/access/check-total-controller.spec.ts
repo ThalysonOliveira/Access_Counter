@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { ok } from '../../../presentation/helpers';
+import { ok, serverError } from '../../../presentation/helpers';
 import { CheckTotalAccessNumber } from '../../../domain/useCases/access';
 import { CheckTotalAccessNumberController } from '../../../presentation/controllers/access';
 
@@ -28,6 +28,19 @@ const makeSut = (): SutTypes => {
 };
 
 describe('Check Total Access Number Controller', () => {
+  it('Should return server error if CheckTotalAccessNumber throw', async () => {
+    const { sut, checkTotalAccessNumberStub } = makeSut();
+
+    jest
+      .spyOn(checkTotalAccessNumberStub, 'execute')
+      .mockReturnValueOnce(
+        new Promise((_resolve, reject) => reject(new Error())),
+      );
+
+    const response = await sut.handle();
+
+    assert.deepEqual(response, serverError(new Error()));
+  });
   it('Should return any numbers access', async () => {
     const { sut } = makeSut();
 
