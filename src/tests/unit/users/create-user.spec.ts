@@ -6,8 +6,8 @@ import { badRequest } from '../../../presentation/helpers';
 
 interface SutTypes {
   sut: CreateUserController;
-  createUser: CreateUser;
-  emailValidate: EmailValidate;
+  createUserStub: CreateUser;
+  emailValidateStub: EmailValidate;
 }
 
 const makeCreateUser = () => {
@@ -31,11 +31,11 @@ const makeEmailValidator = () => {
 };
 
 const makeSut = (): SutTypes => {
-  const createUser = makeCreateUser();
-  const emailValidate = makeEmailValidator();
-  const sut = new CreateUserController(createUser, emailValidate);
+  const createUserStub = makeCreateUser();
+  const emailValidateStub = makeEmailValidator();
+  const sut = new CreateUserController(createUserStub, emailValidateStub);
 
-  return { createUser, emailValidate, sut };
+  return { createUserStub, emailValidateStub, sut };
 };
 
 describe('Create User Controller', () => {
@@ -91,5 +91,23 @@ describe('Create User Controller', () => {
       response,
       badRequest(new Error('O campo password é obrigatório.')),
     );
+  });
+
+  it('Should return bad request if email is not valid', async () => {
+    const { sut, emailValidateStub } = makeSut();
+
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@email.com',
+        password: 'any_password',
+      },
+    };
+
+    jest.spyOn(emailValidateStub, 'execute').mockReturnValueOnce(false);
+
+    const response = await sut.handle(httpRequest);
+
+    assert.deepEqual(response, badRequest(new Error('Email invalido.')));
   });
 });
