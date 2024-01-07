@@ -74,4 +74,22 @@ describe('Create User Controller', () => {
       badRequest(new Error('O campo email é obrigatório.')),
     );
   });
+
+  it('Should return bad request if password is not provided', async () => {
+    const { sut } = makeSut();
+
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@email.com',
+      },
+    };
+
+    const response = await sut.handle(httpRequest);
+
+    assert.deepEqual(
+      response,
+      badRequest(new Error('O campo password é obrigatório.')),
+    );
+  });
 });
