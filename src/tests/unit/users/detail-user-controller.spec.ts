@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { DetailUser } from '../../../domain/useCases/users';
 import { DetailUserController } from '../../../presentation/controllers/users';
-import { badRequest, ok } from '../../../presentation/helpers';
+import { badRequest, ok, serverError } from '../../../presentation/helpers';
 import { User } from '../../../domain/models';
 
 interface SutTypes {
@@ -68,5 +68,25 @@ describe('Detail User Controller', () => {
         },
       }),
     );
+  });
+
+  it('Should return server error if DetailUser throw', async () => {
+    const { sut, detailUserStub } = makeSut();
+
+    const httpRequest = {
+      params: {
+        id: 'any_id',
+      },
+    };
+
+    jest
+      .spyOn(detailUserStub, 'execute')
+      .mockReturnValueOnce(
+        new Promise((_resolve, reject) => reject(new Error())),
+      );
+
+    const response = await sut.handle(httpRequest);
+
+    assert.deepEqual(response, serverError(new Error()));
   });
 });
