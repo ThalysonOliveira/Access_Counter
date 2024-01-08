@@ -1,0 +1,65 @@
+app: stone-api
+service: stone-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: '*'
+
+functions:
+  createUser:
+    handler: src/main/routes/users/create-user.handler
+    events:
+      - httpApi:
+          path: /users
+          method: post
+  detailUser:
+    handler: src/main/routes/users/detail-user.handler
+    events:
+      - httpApi:
+          path: /users/{id}
+          method: get
+  checkTotalAccessNumberService:
+    handler: src/main/routes/access/check-total.handler
+    events:
+      - httpApi:
+          path: /access/total
+          method: get
+  incrementAccessNumberService:
+    handler: src/main/routes/access/increment-access.handler
+    events:
+      - httpApi:
+          path: /access/increment
+          method: get
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: users
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: email
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
