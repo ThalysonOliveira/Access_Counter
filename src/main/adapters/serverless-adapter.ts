@@ -16,7 +16,7 @@ export const serverlessAdapter = (controller: Controller) => {
 
     return {
       statusCode: response.statusCode,
-      body: JSON.stringify(response.body),
+      body: JSON.stringify(response),
     };
   };
 };
