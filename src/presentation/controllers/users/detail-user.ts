@@ -20,7 +20,7 @@ export class DetailUserController implements Controller {
         },
       });
     } catch (error) {
-      return serverError(error);
+      return serverError(error as Error);
     }
   }
 }

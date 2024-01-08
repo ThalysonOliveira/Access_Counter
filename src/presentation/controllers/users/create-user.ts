@@ -36,7 +36,7 @@ export class CreateUserController implements Controller {
         },
       });
     } catch (error) {
-      return serverError(error);
+      return serverError(error as Error);
     }
   }
 }
