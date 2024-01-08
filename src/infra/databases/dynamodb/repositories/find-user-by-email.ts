@@ -5,14 +5,21 @@ import { docClient } from '../config';
 export class FindUserByEmailRepositoryDynamoDb
   implements FindUserByEmailRepository
 {
-  async execute(email: string): Promise<User> {
-    return docClient
-      .get({
+  async execute(email: string): Promise<User | any> {
+    return docClient.get(
+      {
         TableName: 'users',
         Key: {
           email,
         },
-      })
-      .promise();
+      },
+      (error, data) => {
+        if (error) {
+          console.log(error);
+        } else {
+          return data.Item;
+        }
+      },
+    );
   }
 }
